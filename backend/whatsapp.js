@@ -32,7 +32,18 @@ async function connectToWhatsApp() {
   connectionStatus = 'connecting';
   console.log('Initializing WhatsApp Bot client...');
 
+  let version = [2, 3000, 1015901307]; // Default fallback version
+  try {
+    const { fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
+    const latestVersion = await fetchLatestBaileysVersion();
+    version = latestVersion.version;
+    console.log(`Using latest WhatsApp Web version: ${version.join('.')}`);
+  } catch (err) {
+    console.warn('Failed to fetch latest Baileys version, using default fallback:', err.message);
+  }
+
   sock = makeWASocket({
+    version,
     auth: state,
     logger: pino({ level: 'silent' }),
     printQRInTerminal: false // We will print it ourselves with styling
